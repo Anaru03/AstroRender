@@ -12,7 +12,7 @@
 ![OBJ](https://img.shields.io/badge/OBJ-3D_MODEL-777777?style=for-the-badge)
 ![CPU](https://img.shields.io/badge/CPU-RASTERIZATION-0099cc?style=for-the-badge)
 
-![Status](https://img.shields.io/badge/STATUS-PENDING-ffc107?style=for-the-badge)
+![Status](https://img.shields.io/badge/STATUS-COMPLETED-22c55e?style=for-the-badge)
 
 **Universidad del Valle de Guatemala · Gráficas por Computadora · 2026**
 
