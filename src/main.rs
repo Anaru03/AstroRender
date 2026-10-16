@@ -1,3 +1,4 @@
+mod framebuffer;
 mod obj;
 
 use obj::Model;
