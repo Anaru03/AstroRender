@@ -1,5 +1,6 @@
 mod framebuffer;
 mod obj;
+mod triangle;
 
 use obj::Model;
 
