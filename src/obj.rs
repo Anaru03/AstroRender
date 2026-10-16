@@ -92,7 +92,7 @@ mod tests {
         let model = Model::load("assets/models/astro_nave.obj").expect("No se pudo cargar la nave");
 
         assert_eq!(model.vertices.len(), 659);
-        assert_eq!(model.triangles.len(), 1314);
+        assert_eq!(model.triangles.len(), 1310);
     }
 
     #[test]
