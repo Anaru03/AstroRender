@@ -2,7 +2,12 @@ use crate::framebuffer::{Framebuffer, rgb};
 use crate::obj::Model;
 use crate::triangle::{ScreenVertex, draw_triangle};
 
-pub fn render_model(framebuffer: &mut Framebuffer, model: &Model) -> usize {
+pub fn render_model(
+    framebuffer: &mut Framebuffer,
+    model: &Model,
+    angle_y_degrees: f32,
+    angle_x_degrees: f32,
+) -> usize {
     if model.vertices.is_empty() || framebuffer.width == 0 || framebuffer.height == 0 {
         return 0;
     }
@@ -25,10 +30,8 @@ pub fn render_model(framebuffer: &mut Framebuffer, model: &Model) -> usize {
         (min[2] + max[2]) * 0.5,
     ];
 
-    let size = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
-
-    let angle_y = 25.0_f32.to_radians();
-    let angle_x = -25.0_f32.to_radians();
+    let angle_y = angle_y_degrees.to_radians();
+    let angle_x = angle_x_degrees.to_radians();
 
     let (sy, cy) = angle_y.sin_cos();
     let (sx, cx) = angle_x.sin_cos();
@@ -64,7 +67,9 @@ pub fn render_model(framebuffer: &mut Framebuffer, model: &Model) -> usize {
     let projected_height = projected_max[1] - projected_min[1];
 
     let scale_x = framebuffer.width as f32 * 0.72 / projected_width.max(0.001);
+
     let scale_y = framebuffer.height as f32 * 0.72 / projected_height.max(0.001);
+
     let scale = scale_x.min(scale_y);
 
     let projected_center = [
@@ -84,6 +89,7 @@ pub fn render_model(framebuffer: &mut Framebuffer, model: &Model) -> usize {
         .collect();
 
     let light = [0.35_f32, 0.65, 0.68];
+
     let light_length = (light[0] * light[0] + light[1] * light[1] + light[2] * light[2]).sqrt();
 
     let mut rendered = 0;
@@ -96,6 +102,7 @@ pub fn render_model(framebuffer: &mut Framebuffer, model: &Model) -> usize {
         let c = transformed[i2];
 
         let ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+
         let ac = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
 
         let normal = [
@@ -133,29 +140,26 @@ pub fn render_model(framebuffer: &mut Framebuffer, model: &Model) -> usize {
         rendered += 1;
     }
 
-    let _ = size;
-
     rendered
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::obj::Model;
 
     #[test]
     fn test_render_spaceship() {
         let model = Model::load("assets/models/astro_nave.obj").unwrap();
+
         let mut framebuffer = Framebuffer::new(800, 600);
+        let background = rgb(10, 15, 30);
 
-        framebuffer.clear(rgb(10, 15, 30));
+        framebuffer.clear(background);
 
-        let count = render_model(&mut framebuffer, &model);
+        let count = render_model(&mut framebuffer, &model, 25.0, -25.0);
 
         assert!(count > 0);
         assert!(count <= model.triangles.len());
-
-        let background = rgb(10, 15, 30);
 
         assert!(framebuffer.pixels.iter().any(|&pixel| pixel != background));
     }
@@ -163,12 +167,13 @@ mod tests {
     #[test]
     fn test_model_centered_and_scaled() {
         let model = Model::load("assets/models/astro_nave.obj").unwrap();
+
         let mut framebuffer = Framebuffer::new(800, 600);
 
         let background = rgb(10, 15, 30);
         framebuffer.clear(background);
 
-        render_model(&mut framebuffer, &model);
+        render_model(&mut framebuffer, &model, 25.0, -25.0);
 
         let mut min_x = framebuffer.width;
         let mut max_x = 0;
@@ -204,5 +209,21 @@ mod tests {
 
         assert!(model_width < 800);
         assert!(model_height < 600);
+    }
+
+    #[test]
+    fn test_rotated_spaceship() {
+        let model = Model::load("assets/models/astro_nave.obj").unwrap();
+
+        let mut framebuffer = Framebuffer::new(800, 600);
+
+        let background = rgb(10, 15, 30);
+        framebuffer.clear(background);
+
+        let count = render_model(&mut framebuffer, &model, 90.0, -20.0);
+
+        assert!(count > 0);
+
+        assert!(framebuffer.pixels.iter().any(|&pixel| pixel != background));
     }
 }
